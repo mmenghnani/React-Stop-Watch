@@ -19,11 +19,14 @@
                 this.state = {
                     status : false,
                     elapsed : 0,
-                    start : Date.now()
+                    start : Date.now(),
+                    laps : []
                 }
                 this.handleStartClock  = this.handleStartClock.bind(this);
                 this.handleResetClock  = this.handleResetClock.bind(this);   
-                this.tick = this.tick.bind(this);            
+                this.tick = this.tick.bind(this); 
+                this.handleLaps  = this.handleLaps.bind(this);   
+
             }
 
         componentwillUnmount(){
@@ -48,7 +51,7 @@
             this.setState((currentState)=>{ 
                 if(!currentState.status)
                 {                       
-                    var timer = setInterval(this.tick,33)
+                    var timer = setInterval(this.tick,50)
                     currentState.timer = timer
                     currentState.status = true
                  }
@@ -76,14 +79,34 @@
             })
         }    
 
+        handleLaps(){
+  
+            this.setState((currentState)=>{
+                var lapElapsed = this.state.laps.length ? this.state.laps[0].elapsed : 0;
+                var lapTitle = "Lap"+(this.state.laps.length+1);
+                var lapTime = lapTitle+": "+this.getTimeSpan(this.state.elapsed - lapElapsed)
+                var lapElem = { label: lapTime, elapsed: this.state.elapsed };
+                this.setState({laps: [lapElem].concat(this.state.laps)});
+
+                return {
+                    laps : currentState.laps
+                }
+            })
+        }
                    
             render (){
                 return (
-                    <div>
-                        <h4> StopWatch </h4>
+                    <div style = {style.centered}>
+                        <h1 > StopWatch </h1>
                         <button onClick = {this.handleStartClock} style = {style.button} > {this.state.status ? 'Stop' : 'Start'} </button>
                         <button onClick = {this.handleResetClock} style = {style.button}> Reset </button>
+                        <button onClick = {this.handleLaps} style = {style.button}> Lap </button>
                         <h1>{this.getTimeSpan(this.state.elapsed)}</h1>
+                        <ul style={style.lap}>
+              {this.state.laps.map(function(lap) {
+                return <li key={lap.id}>{lap.label}</li>;
+              })}
+            </ul>
 
                     </div>
                 )
@@ -91,12 +114,17 @@
             }
         }
 
-        var style = {
+ var style = {
+    centered : {
+          position : 'absolute',
+          left : '40%'
+      },
       button: {
         fontSize: 20,
         height: 44,
         width: 88,
         margin: 5,
+        position : 'center'
       },
       lap: {
         fontSize: 28,
