@@ -74,7 +74,8 @@
                 return {
                     timer : undefined,
                     elapsed : 0,
-                    status : false
+                    status : false,
+                    laps : []
                 }
             })
         }    
@@ -83,13 +84,12 @@
   
             this.setState((currentState)=>{
                 var lapElapsed = this.state.laps.length ? this.state.laps[0].elapsed : 0;
-                var lapTitle = "Lap"+(this.state.laps.length+1);
+                console.log(lapElapsed);
+                var lapTitle = "Lap "+(this.state.laps.length+1);
                 var lapTime = lapTitle+": "+this.getTimeSpan(this.state.elapsed - lapElapsed)
                 var lapElem = { label: lapTime, elapsed: this.state.elapsed };
-                this.setState({laps: [lapElem].concat(this.state.laps)});
-
                 return {
-                    laps : currentState.laps
+                    laps : [lapElem].concat(this.state.laps)
                 }
             })
         }
@@ -102,11 +102,7 @@
                         <button onClick = {this.handleResetClock} style = {style.button}> Reset </button>
                         <button onClick = {this.handleLaps} style = {style.button}> Lap </button>
                         <h1>{this.getTimeSpan(this.state.elapsed)}</h1>
-                        <ul style={style.lap}>
-              {this.state.laps.map(function(lap) {
-                return <li key={lap.id}>{lap.label}</li>;
-              })}
-            </ul>
+                        <ul style={style.lap}> {this.state.laps.map(function(lap) { return <li key={lap.id}>{lap.label}</li>; })}  </ul>
 
                     </div>
                 )
